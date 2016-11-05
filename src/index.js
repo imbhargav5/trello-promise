@@ -1,4 +1,6 @@
 import fetch from 'isomorphic-fetch';
+import FormData from 'form-data';
+
 const GET = 'GET',
       POST = 'POST',
       PUT = 'PUT',
@@ -33,6 +35,20 @@ class Trello{
             uri = `${resourceUri}?${queryString}`;
 
             break;
+
+          case POST:
+            if(opts){
+              query = {
+                ...query,
+                ...opts
+              };
+            }
+            body = new FormData();
+            Object.entries(query).forEach(entry=>{
+              body.append(entry[0],entry[1]);
+            });
+            uri = resourceUri;
+            break;
           default :
             break;
        }
@@ -46,8 +62,8 @@ class Trello{
   getMyBoards(){
     return this.makeRequest(GET,this.uri + '/1/member/me/boards',{});
   }
-  addBoard(name, description, organizationId, callback) {
-      var query = this.createQuery();
+  addBoard(name, description, organizationId) {
+      var query = {};
       query.name = name;
 
       if (description !== null)
@@ -55,220 +71,220 @@ class Trello{
       if (organizationId !== null)
           query.idOrganization = organizationId;
 
-      return this.makeRequest(POST, this.uri + '/1/boards', {query: query}, callback);
+      return this.makeRequest(POST, this.uri + '/1/boards', query);
   };
 
-addCard(name, description, listId, callback) {
-    var query = this.createQuery();
+addCard(name, description, listId) {
+    const query = {};
     query.name = name;
     query.idList = listId;
 
     if (description !== null)
         query.desc = description;
 
-    return this.makeRequest(POST, this.uri + '/1/cards', {query: query}, callback);
+    return this.makeRequest(POST, this.uri + '/1/cards', query);
 };
 
-getCard(boardId, cardId, callback) {
-    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/cards/' + cardId, {}, callback);
-};
+getCard(boardId, cardId) {
+    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/cards/' + cardId, {});
+}
 
-getCardsForList(listId, actions, callback) {
+getCardsForList(listId, actions) {
     var query = {};
     if (actions)
         query.actions = actions;
-    return this.makeRequest(GET, this.uri + '/1/lists/' + listId + '/cards', query, callback);
+    return this.makeRequest(GET, this.uri + '/1/lists/' + listId + '/cards', query);
 };
 
-renameList(listId, name, callback) {
-    return this.makeRequest(PUT, this.uri + '/1/lists/' + listId + '/name', {name}, callback);
+renameList(listId, name) {
+    return this.makeRequest(PUT, this.uri + '/1/lists/' + listId + '/name', {name});
 };
 
-addListToBoard (boardId, name, callback) {
-    var query = this.createQuery();
+addListToBoard (boardId, name) {
+    const query = {};
     query.name = name;
 
-    return this.makeRequest(POST, this.uri + '/1/boards/' + boardId + '/lists', {query: query}, callback);
+    return this.makeRequest(POST, this.uri + '/1/boards/' + boardId + '/lists', {query: query});
 };
 
-addCommentToCard(cardId, comment, callback) {
-    var query = this.createQuery();
+addCommentToCard(cardId, comment) {
+  const query = {};
     query.text = comment;
 
-    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/actions/comments', {query: query}, callback);
+    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/actions/comments', {query: query});
 };
 
-addAttachmentToCard(cardId, url, callback) {
-    var query = this.createQuery();
+addAttachmentToCard(cardId, url) {
+    const query = {};
     query.url = url;
 
-    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/attachments', {query: query}, callback);
+    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/attachments', {query: query});
 };
 
-addMemberToCard(cardId, memberId, callback) {
-    var query = this.createQuery();
+addMemberToCard(cardId, memberId) {
+    const query = {};
     query.value = memberId;
 
-    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/members', {query: query}, callback);
+    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/members', {query: query});
 };
 
-getBoards(memberId, callback) {
-    return this.makeRequest(GET, this.uri + '/1/members/' + memberId + '/boards', {query: this.createQuery()}, callback);
+getBoards(memberId) {
+    return this.makeRequest(GET, this.uri + '/1/members/' + memberId + '/boards', {query: this.createQuery()});
 };
 
-addChecklistToCard (cardId, name, callback) {
-    var query = this.createQuery();
+addChecklistToCard (cardId, name) {
+    const query = {};
     query.name = name;
 
-    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/checklists', { query: query }, callback);
+    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/checklists', { query: query });
 };
 
-addExistingChecklistToCard (cardId, checklistId, callback) {
-    var query = this.createQuery();
+addExistingChecklistToCard (cardId, checklistId) {
+    const query = {};
     query.idChecklistSource = checklistId;
 
-    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/checklists', { query: query }, callback);
+    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/checklists', { query: query });
 };
 
-getChecklistsOnCard(cardId, callback) {
-    return this.makeRequest(GET, this.uri + '/1/cards/' + cardId + '/checklists', {query: this.createQuery()}, callback);
+getChecklistsOnCard(cardId) {
+    return this.makeRequest(GET, this.uri + '/1/cards/' + cardId + '/checklists', {query: this.createQuery()});
 };
 
-addItemToChecklist (checkListId, name, pos, callback) {
-    var query = this.createQuery();
+addItemToChecklist (checkListId, name, pos) {
+    const query = {};
     query.name = name;
     query.pos = pos;
 
-    return this.makeRequest(POST, this.uri + '/1/checklists/' + checkListId + '/checkitems', {query: query}, callback);
+    return this.makeRequest(POST, this.uri + '/1/checklists/' + checkListId + '/checkitems', {query: query});
 };
 
-updateCard (cardId, field, value, callback) {
-    var query = this.createQuery();
+updateCard (cardId, field, value) {
+    const query = {};
     query.value = value;
 
-    return this.makeRequest(PUT, this.uri + '/1/cards/' + cardId + '/' + field, {query: query}, callback);
+    return this.makeRequest(PUT, this.uri + '/1/cards/' + cardId + '/' + field, {query: query});
 };
 
-updateChecklist(checklistId, field, value, callback) {
-    var query = this.createQuery();
+updateChecklist(checklistId, field, value) {
+    const query = {};
     query.value = value;
 
-    return this.makeRequest(PUT, this.uri + '/1/checklists/' + checklistId + '/' + field, {query: query}, callback);
+    return this.makeRequest(PUT, this.uri + '/1/checklists/' + checklistId + '/' + field, {query: query});
 };
 
-updateCardName(cardId, name, callback) {
-    return this.updateCard(cardId, 'name', name, callback);
+updateCardName(cardId, name) {
+    return this.updateCard(cardId, 'name', name);
 };
 
-updateCardDescription(cardId, description, callback) {
-    return this.updateCard(cardId, 'desc', description, callback);
+updateCardDescription(cardId, description) {
+    return this.updateCard(cardId, 'desc', description);
 };
 
-updateCardList(cardId, listId, callback) {
-    return this.updateCard(cardId, 'idList', listId, callback);
+updateCardList(cardId, listId) {
+    return this.updateCard(cardId, 'idList', listId);
 };
 
-getMember(memberId, callback) {
-    return this.makeRequest(GET, this.uri + '/1/member/' + memberId, {query: this.createQuery()}, callback);
+getMember(memberId) {
+    return this.makeRequest(GET, this.uri + '/1/member/' + memberId, {query: this.createQuery()});
 }
 
-getBoardMembers(boardId, callback) {
-    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/members', {query: this.createQuery()}, callback);
+getBoardMembers(boardId) {
+    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/members', {query: this.createQuery()});
 };
 
-getOrgMembers(organizationId, callback) {
-    return this.makeRequest(GET, this.uri + '/1/organizations/' + organizationId + '/members', {query: this.createQuery()}, callback);
+getOrgMembers(organizationId) {
+    return this.makeRequest(GET, this.uri + '/1/organizations/' + organizationId + '/members', {query: this.createQuery()});
 };
 
 getListsOnBoard(boardId) {
     return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/lists', {});
 };
 
-getListsOnBoardByFilter(boardId, filter, callback) {
-    var query = this.createQuery();
+getListsOnBoardByFilter(boardId, filter) {
+    const query = {};
     query.filter = filter;
-    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/lists', {query: query}, callback);
+    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/lists', {query: query});
 };
 
-getCardsOnBoard(boardId, callback) {
-    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/cards', {query: this.createQuery()}, callback);
+getCardsOnBoard(boardId) {
+    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/cards', {query: this.createQuery()});
 };
 
-getCardsOnList(listId, callback) {
-    return this.makeRequest(GET, this.uri + '/1/lists/' + listId + '/cards', {query: this.createQuery()}, callback);
+getCardsOnList(listId) {
+    return this.makeRequest(GET, this.uri + '/1/lists/' + listId + '/cards', {query: this.createQuery()});
 };
 
-deleteCard(cardId, callback) {
-    return this.makeRequest(DELETE, this.uri + '/1/cards/' + cardId, {query: this.createQuery()}, callback);
+deleteCard(cardId) {
+    return this.makeRequest(DELETE, this.uri + '/1/cards/' + cardId, {query: this.createQuery()});
 };
 
-addWebhook(description, callbackUrl, idModel, callback) {
-    var query = this.createQuery();
+addWebhook(description, callbackUrl, idModel) {
+    const query = {};
     var data = {};
 
     data.description = description;
     data.callbackURL = callbackUrl;
     data.idModel = idModel;
 
-    return this.makeRequest(POST, this.uri + '/1/tokens/' + this.token + '/webhooks/', { data: data, query: query }, callback);
+    return this.makeRequest(POST, this.uri + '/1/tokens/' + this.token + '/webhooks/', { data: data, query: query });
 };
 
-deleteWebhook(webHookId, callback) {
-    var query = this.createQuery();
+deleteWebhook(webHookId) {
+    const query = {};
 
-    return this.makeRequest(DELETE, this.uri + '/1/webhooks/' + webHookId, { query: query }, callback);
+    return this.makeRequest(DELETE, this.uri + '/1/webhooks/' + webHookId, { query: query });
 };
 
-getLabelsForBoard(boardId, callback) {
-    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/labels', {query:this.createQuery()}, callback);
+getLabelsForBoard(boardId) {
+    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/labels', {query:this.createQuery()});
 };
 
-addLabelOnBoard(boardId, name, color, callback) {
-    var query = this.createQuery();
+addLabelOnBoard(boardId, name, color) {
+    const query = {};
     var data = {
         idBoard: boardId,
         color: color,
         name: name
     };
 
-    return this.makeRequest(POST, this.uri + '/1/labels', {data: data, query:query}, callback);
+    return this.makeRequest(POST, this.uri + '/1/labels', {data: data, query:query});
 };
 
-deleteLabel(labelId, callback) {
-    return this.makeRequest(DELETE, this.uri + '/1/labels/' + labelId, {query: this.createQuery()}, callback);
+deleteLabel(labelId) {
+    return this.makeRequest(DELETE, this.uri + '/1/labels/' + labelId, {query: this.createQuery()});
 };
 
-addLabelToCard(cardId, labelId, callback) {
-    var query = this.createQuery();
+addLabelToCard(cardId, labelId) {
+    const query = {};
     var data = { value: labelId };
-    return this.makeRequest(POST, this.uri+'/1/cards/' + cardId + '/idLabels', {query:query, data:data}, callback);
+    return this.makeRequest(POST, this.uri+'/1/cards/' + cardId + '/idLabels', {query:query, data:data});
 };
 
-deleteLabelFromCard(cardId, labelId, callback){
-    return this.makeRequest(DELETE, this.uri + '/1/cards/' + cardId + '/idLabels/'+labelId, {query: this.createQuery()}, callback);
+deleteLabelFromCard(cardId, labelId){
+    return this.makeRequest(DELETE, this.uri + '/1/cards/' + cardId + '/idLabels/'+labelId, {query: this.createQuery()});
 };
 
-updateLabel(labelId, field, value, callback) {
-    var query = this.createQuery();
+updateLabel(labelId, field, value) {
+    const query = {};
     query.value = value;
 
-    return this.makeRequest(PUT, this.uri + '/1/labels/' + labelId + '/' + field, {query: query}, callback);
+    return this.makeRequest(PUT, this.uri + '/1/labels/' + labelId + '/' + field, {query: query});
 };
 
-updateLabelName(labelId, name, callback) {
-    return this.updateLabel(labelId, 'name', name, callback);
+updateLabelName(labelId, name) {
+    return this.updateLabel(labelId, 'name', name);
 };
 
-updateLabelColor(labelId, color, callback) {
-    return this.upadateLabel(labelId, 'color', color, callback);
+updateLabelColor(labelId, color) {
+    return this.upadateLabel(labelId, 'color', color);
 };
 
-getCardStickers (cardId, callback) {
-    return this.makeRequest(GET, this.uri + '/1/cards/' + cardId + '/stickers', {query: this.createQuery()}, callback);
+getCardStickers (cardId) {
+    return this.makeRequest(GET, this.uri + '/1/cards/' + cardId + '/stickers', {query: this.createQuery()});
 };
 
-addStickerToCard(cardId, image, left, top, zIndex, rotate, callback) {
-    var query = this.createQuery();
+addStickerToCard(cardId, image, left, top, zIndex, rotate) {
+    const query = {};
     var data = {
       image: image,
       top: top,
@@ -276,7 +292,7 @@ addStickerToCard(cardId, image, left, top, zIndex, rotate, callback) {
       zIndex: zIndex,
       rotate: rotate,
     };
-    return this.makeRequest(POST, this.uri+'/1/cards/' + cardId + '/stickers', {query:query, data:data}, callback);
+    return this.makeRequest(POST, this.uri+'/1/cards/' + cardId + '/stickers', {query:query, data:data});
 };
 }
 

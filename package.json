@@ -1,9 +1,9 @@
 {
-  "name": "trello-async-api",
+  "name": "trello-promise",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "start": "node_modules/babel-cli/bin/babel.js src --out-dir lib && node lib/index.js"
+    "start": "rimraf lib && node_modules/babel-cli/bin/babel.js src --out-dir lib && node lib/index.js"
   },
   "repository": {
     "url": "git@github.com:bhargav175/trello-async-api.git",
@@ -12,12 +12,16 @@
   "author": "Bhargav Ponnapalli <bhargavponnapalli.5@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "form-data": "^2.1.1",
+    "isomorphic-fetch": "^2.2.1"
+  },
+  "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.0",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-es2017": "^6.16.0",
     "babel-preset-stage-3": "^6.17.0",
     "eslint": "^3.9.1",
-    "isomorphic-fetch": "^2.2.1"
+    "rimraf": "^2.5.4"
   }
 }
