@@ -55,8 +55,7 @@ class Trello{
        return fetch(uri,{
           method,
           body
-       }).then(res=>res.json())
-       .then(response=>console.log(response));
+       }).then(res=>res.json());
   }
 
   getMyBoards(){
