@@ -16,7 +16,7 @@ class Trello{
   createQuery(){
     return {key: this.key, token: this.token};
   };
-  makeRequest(method, resourceUri , opts) {
+  makeRequest(method, resourceUri , opts={}) {
        let body, uri, query = this.createQuery() ,queryString = '';
        switch(method){
          case GET :
@@ -103,50 +103,50 @@ addListToBoard (boardId, name) {
     const query = {};
     query.name = name;
 
-    return this.makeRequest(POST, this.uri + '/1/boards/' + boardId + '/lists', {query: query});
+    return this.makeRequest(POST, this.uri + '/1/boards/' + boardId + '/lists', query);
 };
 
 addCommentToCard(cardId, comment) {
   const query = {};
     query.text = comment;
 
-    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/actions/comments', {query: query});
+    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/actions/comments', query);
 };
 
 addAttachmentToCard(cardId, url) {
     const query = {};
     query.url = url;
 
-    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/attachments', {query: query});
+    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/attachments', query);
 };
 
 addMemberToCard(cardId, memberId) {
     const query = {};
     query.value = memberId;
 
-    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/members', {query: query});
+    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/members', query);
 };
 
 getBoards(memberId) {
-    return this.makeRequest(GET, this.uri + '/1/members/' + memberId + '/boards', {query: this.createQuery()});
+    return this.makeRequest(GET, this.uri + '/1/members/' + memberId + '/boards');
 };
 
 addChecklistToCard (cardId, name) {
     const query = {};
     query.name = name;
 
-    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/checklists', { query: query });
+    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/checklists', query);
 };
 
 addExistingChecklistToCard (cardId, checklistId) {
     const query = {};
     query.idChecklistSource = checklistId;
 
-    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/checklists', { query: query });
+    return this.makeRequest(POST, this.uri + '/1/cards/' + cardId + '/checklists', query);
 };
 
 getChecklistsOnCard(cardId) {
-    return this.makeRequest(GET, this.uri + '/1/cards/' + cardId + '/checklists', {query: this.createQuery()});
+    return this.makeRequest(GET, this.uri + '/1/cards/' + cardId + '/checklists');
 };
 
 addItemToChecklist (checkListId, name, pos) {
@@ -154,21 +154,21 @@ addItemToChecklist (checkListId, name, pos) {
     query.name = name;
     query.pos = pos;
 
-    return this.makeRequest(POST, this.uri + '/1/checklists/' + checkListId + '/checkitems', {query: query});
+    return this.makeRequest(POST, this.uri + '/1/checklists/' + checkListId + '/checkitems', query);
 };
 
 updateCard (cardId, field, value) {
     const query = {};
     query.value = value;
 
-    return this.makeRequest(PUT, this.uri + '/1/cards/' + cardId + '/' + field, {query: query});
+    return this.makeRequest(PUT, this.uri + '/1/cards/' + cardId + '/' + field, query);
 };
 
 updateChecklist(checklistId, field, value) {
     const query = {};
     query.value = value;
 
-    return this.makeRequest(PUT, this.uri + '/1/checklists/' + checklistId + '/' + field, {query: query});
+    return this.makeRequest(PUT, this.uri + '/1/checklists/' + checklistId + '/' + field, query);
 };
 
 updateCardName(cardId, name) {
@@ -184,90 +184,85 @@ updateCardList(cardId, listId) {
 };
 
 getMember(memberId) {
-    return this.makeRequest(GET, this.uri + '/1/member/' + memberId, {query: this.createQuery()});
+    return this.makeRequest(GET, this.uri + '/1/member/' + memberId);
 }
 
 getBoardMembers(boardId) {
-    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/members', {query: this.createQuery()});
+    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/members');
 };
 
 getOrgMembers(organizationId) {
-    return this.makeRequest(GET, this.uri + '/1/organizations/' + organizationId + '/members', {query: this.createQuery()});
+    return this.makeRequest(GET, this.uri + '/1/organizations/' + organizationId + '/members');
 };
 
 getListsOnBoard(boardId) {
-    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/lists', {});
+    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/lists');
 };
 
 getListsOnBoardByFilter(boardId, filter) {
     const query = {};
     query.filter = filter;
-    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/lists', {query: query});
+    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/lists', query);
 };
 
 getCardsOnBoard(boardId) {
-    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/cards', {query: this.createQuery()});
+    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/cards');
 };
 
 getCardsOnList(listId) {
-    return this.makeRequest(GET, this.uri + '/1/lists/' + listId + '/cards', {query: this.createQuery()});
+    return this.makeRequest(GET, this.uri + '/1/lists/' + listId + '/cards');
 };
 
 deleteCard(cardId) {
-    return this.makeRequest(DELETE, this.uri + '/1/cards/' + cardId, {query: this.createQuery()});
+    return this.makeRequest(DELETE, this.uri + '/1/cards/' + cardId);
 };
 
 addWebhook(description, callbackUrl, idModel) {
-    const query = {};
     var data = {};
 
     data.description = description;
     data.callbackURL = callbackUrl;
     data.idModel = idModel;
 
-    return this.makeRequest(POST, this.uri + '/1/tokens/' + this.token + '/webhooks/', { data: data, query: query });
+    return this.makeRequest(POST, this.uri + '/1/tokens/' + this.token + '/webhooks/',data);
 };
 
 deleteWebhook(webHookId) {
-    const query = {};
-
-    return this.makeRequest(DELETE, this.uri + '/1/webhooks/' + webHookId, { query: query });
+    return this.makeRequest(DELETE, this.uri + '/1/webhooks/' + webHookId);
 };
 
 getLabelsForBoard(boardId) {
-    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/labels', {query:this.createQuery()});
+    return this.makeRequest(GET, this.uri + '/1/boards/' + boardId + '/labels');
 };
 
 addLabelOnBoard(boardId, name, color) {
-    const query = {};
     var data = {
         idBoard: boardId,
         color: color,
         name: name
     };
 
-    return this.makeRequest(POST, this.uri + '/1/labels', {data: data, query:query});
+    return this.makeRequest(POST, this.uri + '/1/labels', data);
 };
 
 deleteLabel(labelId) {
-    return this.makeRequest(DELETE, this.uri + '/1/labels/' + labelId, {query: this.createQuery()});
+    return this.makeRequest(DELETE, this.uri + '/1/labels/' + labelId);
 };
 
 addLabelToCard(cardId, labelId) {
-    const query = {};
     var data = { value: labelId };
-    return this.makeRequest(POST, this.uri+'/1/cards/' + cardId + '/idLabels', {query:query, data:data});
+    return this.makeRequest(POST, this.uri+'/1/cards/' + cardId + '/idLabels', data);
 };
 
 deleteLabelFromCard(cardId, labelId){
-    return this.makeRequest(DELETE, this.uri + '/1/cards/' + cardId + '/idLabels/'+labelId, {query: this.createQuery()});
+    return this.makeRequest(DELETE, this.uri + '/1/cards/' + cardId + '/idLabels/'+labelId);
 };
 
 updateLabel(labelId, field, value) {
     const query = {};
     query.value = value;
 
-    return this.makeRequest(PUT, this.uri + '/1/labels/' + labelId + '/' + field, {query: query});
+    return this.makeRequest(PUT, this.uri + '/1/labels/' + labelId + '/' + field, query);
 };
 
 updateLabelName(labelId, name) {
@@ -279,11 +274,10 @@ updateLabelColor(labelId, color) {
 };
 
 getCardStickers (cardId) {
-    return this.makeRequest(GET, this.uri + '/1/cards/' + cardId + '/stickers', {query: this.createQuery()});
+    return this.makeRequest(GET, this.uri + '/1/cards/' + cardId + '/stickers');
 };
 
 addStickerToCard(cardId, image, left, top, zIndex, rotate) {
-    const query = {};
     var data = {
       image: image,
       top: top,
@@ -291,7 +285,7 @@ addStickerToCard(cardId, image, left, top, zIndex, rotate) {
       zIndex: zIndex,
       rotate: rotate,
     };
-    return this.makeRequest(POST, this.uri+'/1/cards/' + cardId + '/stickers', {query:query, data:data});
+    return this.makeRequest(POST, this.uri+'/1/cards/' + cardId + '/stickers', data);
 };
 }
 
